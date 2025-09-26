@@ -1,147 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Parker's Cute Aesthetic Website</title>
+  <meta charset="UTF-8">
+  <title>✨ Cute Friend Tracker ✨</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap');
-
     body {
-      margin: 0;
-      font-family: 'Baloo 2', cursive;
-      background: linear-gradient(180deg, #fcd6ff, #e3c9ff, #c9e8ff);
-      color: #fff;
-      text-align: center;
-      overflow-x: hidden;
-    }
-
-    h1, h2, h3, p, li, div, span {
-      font-family: 'Baloo 2', cursive;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(135deg, #ffd6f6, #e0bbff, #c8f1ff);
       color: #fffaf0;
-      letter-spacing: 2px;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
     }
 
-    h1 {
-      font-size: 3rem;
-      margin-top: 1rem;
+    h1, h2 {
+      font-size: 2.5em;
+      color: #fffaf0;
+      text-shadow: 2px 2px #ff9ecb;
     }
 
-    .section {
-      margin: 2rem auto;
-      padding: 2rem;
-      max-width: 1000px;
-      border-radius: 25px;
-      background: rgba(255, 192, 203, 0.7);
-      backdrop-filter: blur(10px);
-      border: 3px solid #ffe4f1;
-    }
-
-    .box {
-      margin: 1rem;
-      padding: 1.5rem;
+    .friend-box {
+      background: #ffb6c1;
       border-radius: 20px;
-      background: #ffcce5;
-      border: 2px solid #ffe6f3;
-      display: inline-block;
-      min-width: 200px;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 500px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+      font-size: 1.2em;
     }
 
-    .column {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 2rem;
-      margin-top: 1rem;
+    .emoji {
+      font-size: 2em;
+      margin: 10px;
     }
 
-    .clown-connector {
-      font-size: 2rem;
-      margin-bottom: 1rem;
+    .countdown {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #fffaf0;
     }
 
-    .countdown-box {
-      margin: 1rem;
-      padding: 1rem;
-      border-radius: 25px;
-      border: 3px solid #fffaf0;
-      background: rgba(255, 255, 255, 0.2);
-      font-size: 1.5rem;
+    .note {
+      font-style: italic;
+      color: #ffe4f2;
+    }
+
+    .subjects {
+      background: #dab6fc;
+      padding: 15px;
+      border-radius: 15px;
+      margin: 30px auto;
+      max-width: 600px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .reminder {
+      background: #ff69b4;
+      color: #fff;
+      padding: 10px;
+      border-radius: 12px;
+      margin-top: 10px;
+      display: none;
     }
   </style>
 </head>
 <body>
-  <h1>✨ Parker's Cute World ✨</h1>
+  <h1>💕 My Cute Friend Tracker 💕</h1>
 
-  <div class="section">
-    <h2>Sports & Friends</h2>
-    <div class="column">
-      <div class="box">
-        <div class="clown-connector">🤡</div>
-        <h3>Rock Climbing</h3>
-        <p>Allison - Dec 22</p>
-      </div>
-      <div class="box">
-        <div class="clown-connector">🤡</div>
-        <h3>Volleyball</h3>
-        <p>Lauren - Jun 19</p>
-        <p>Charlotte - Oct 12</p>
-        <p>Jasmine - (add bday)</p>
-        <p>Bella - (add bday)</p>
-        <p>Chloe - Oct 5</p>
-      </div>
-      <div class="box">
-        <div class="clown-connector">🤡</div>
-        <h3>Skiing</h3>
-        <p>Emily - Nov 20</p>
-        <p>Charlotte - Oct 12</p>
-      </div>
-    </div>
+  <div class="friend-box">
+    <div class="emoji">❤️ Charlotte</div>
+    <p>Sport: Skiing 🎿</p>
+    <p>Birthday: <span id="charlotte-bday">2025-12-15</span></p>
+    <p>Personality: Fun, pretty, has a boyfriend 💌</p>
+    <div class="countdown" id="charlotte-countdown"></div>
+    <div class="reminder" id="charlotte-reminder">🎁 Reminder: Charlotte’s birthday is in 5 days! Get a gift! 🎀</div>
   </div>
 
-  <div class="section">
-    <h2>Funny Facts About Parker</h2>
-    <p>💜 Favorite color: Purple</p>
-    <p>🎂 Birthday: March 18</p>
-    <p>🐶 Dog named Orca</p>
-    <p>🍽️ Loves all foods</p>
+  <div class="friend-box">
+    <div class="emoji">🎨 Oriana</div>
+    <p>Sport: None (artistic 🎭)</p>
+    <p>Birthday: <span id="oriana-bday">2025-11-10</span></p>
+    <p>Personality: Average at everything, pretty, no boyfriend</p>
+    <div class="countdown" id="oriana-countdown"></div>
+    <div class="reminder" id="oriana-reminder">🎁 Reminder: Oriana’s birthday is in 5 days! Get a gift! 🎀</div>
   </div>
 
-  <div class="section">
-    <h2>Countdowns</h2>
-    <div id="countdowns"></div>
+  <div class="friend-box">
+    <div class="emoji">📞 Lauren</div>
+    <p>Sport: Volleyball 🏐</p>
+    <p>Birthday: <span id="lauren-bday">2025-10-30</span></p>
+    <p>Personality: Nicest friend, pretty, calls me every night 💕</p>
+    <div class="note">⏰ Reminder: Call Lauren at 8:45 every night!</div>
+    <div class="countdown" id="lauren-countdown"></div>
+    <div class="reminder" id="lauren-reminder">🎁 Reminder: Lauren’s birthday is in 5 days! Get a gift! 🎀</div>
+  </div>
+
+  <div class="friend-box">
+    <div class="emoji">👓 Chloe</div>
+    <p>Sport: Volleyball 🏐</p>
+    <p>Birthday: <span id="chloe-bday">2025-09-29</span></p>
+    <p>Personality: New girl, glasses, pretty, likes a few boys 💌</p>
+    <div class="countdown" id="chloe-countdown"></div>
+    <div class="reminder" id="chloe-reminder">🎁 Reminder: Chloe’s birthday is in 5 days! Get a gift! 🎀</div>
+  </div>
+
+  <div class="friend-box">
+    <div class="emoji">😒 Leah</div>
+    <p>Sport: None</p>
+    <p>Birthday: <span id="leah-bday">2025-11-20</span></p>
+    <p>Personality: Annoying, in lots of my classes</p>
+    <div class="countdown" id="leah-countdown"></div>
+    <div class="reminder" id="leah-reminder">🎁 Reminder: Leah’s birthday is in 5 days! Get a gift! 🎀</div>
+  </div>
+
+  <div class="subjects">
+    <h2>📚 My Favorite Subjects</h2>
+    <p>1. History 🏺</p>
+    <p>2. Science 🔬</p>
+    <p>3. Math ➗</p>
+    <p>4. Reading 📖</p>
+    <p>5. Writing ✍️</p>
+    <p>6. Stats 📊</p>
   </div>
 
   <script>
-    // Countdown Logic
-    const events = [
-      { name: "Parker's Birthday", date: new Date(new Date().getFullYear(), 2, 18) },
-      { name: "Last Day of School", date: new Date(new Date().getFullYear(), 4, 29) },
-      { name: "Halloween", date: new Date(new Date().getFullYear(), 9, 31) },
-      { name: "Thanksgiving", date: new Date(new Date().getFullYear(), 10, 27) },
-      { name: "Christmas", date: new Date(new Date().getFullYear(), 11, 25) },
-      { name: "Valentine's Day", date: new Date(new Date().getFullYear(), 1, 14) },
-      { name: "St. Patrick's Day", date: new Date(new Date().getFullYear(), 2, 17) },
-      { name: "Easter", date: new Date(new Date().getFullYear(), 3, 20) }
-    ];
+    function setupCountdown(id, bdayId, reminderId) {
+      const countdownEl = document.getElementById(id);
+      const bdayEl = document.getElementById(bdayId);
+      const reminderEl = document.getElementById(reminderId);
+      const bday = new Date(bdayEl.innerText + "T00:00:00");
 
-    function updateCountdowns() {
-      const container = document.getElementById("countdowns");
-      container.innerHTML = "";
-      const now = new Date();
-      events.forEach(event => {
-        if (event.date < now) event.date.setFullYear(now.getFullYear() + 1);
-        const diff = event.date - now;
+      function updateCountdown() {
+        const now = new Date();
+        let diff = bday - now;
+
+        if (diff < 0) {
+          bday.setFullYear(bday.getFullYear() + 1);
+          diff = bday - now;
+        }
+
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const box = document.createElement("div");
-        box.className = "countdown-box";
-        box.textContent = `${event.name}: ${days} days away!`;
-        container.appendChild(box);
-      });
+        countdownEl.innerText = `🎂 ${days} days until birthday! 🎂`;
+
+        if (days === 5) {
+          reminderEl.style.display = "block";
+        } else {
+          reminderEl.style.display = "none";
+        }
+      }
+
+      updateCountdown();
+      setInterval(updateCountdown, 1000 * 60 * 60); 
     }
-    setInterval(updateCountdowns, 1000 * 60 * 60);
-    updateCountdowns();
+
+    setupCountdown("charlotte-countdown", "charlotte-bday", "charlotte-reminder");
+    setupCountdown("oriana-countdown", "oriana-bday", "oriana-reminder");
+    setupCountdown("lauren-countdown", "lauren-bday", "lauren-reminder");
+    setupCountdown("chloe-countdown", "chloe-bday", "chloe-reminder");
+    setupCountdown("leah-countdown", "leah-bday", "leah-reminder");
   </script>
 </body>
 </html>
-
