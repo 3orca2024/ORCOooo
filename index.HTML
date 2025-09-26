@@ -3,108 +3,113 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Parker Loves Rockclimbing</title>
+  <title>Parker's Cute Aesthetic Website</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap');
 
     body {
       margin: 0;
       font-family: 'Baloo 2', cursive;
-      background: linear-gradient(180deg, #b897ff 0%, #caa8ff 100%);
-      color: #fffdd0; /* cream white */
+      background: linear-gradient(180deg, #fcd6ff, #e3c9ff, #c9e8ff);
+      color: #fff;
       text-align: center;
       overflow-x: hidden;
     }
 
     h1, h2, h3, p, li, div, span {
       font-family: 'Baloo 2', cursive;
-      color: #fffdd0;
-      font-size: 2rem;
+      color: #fffaf0;
       letter-spacing: 2px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-top: 1rem;
     }
 
     .section {
       margin: 2rem auto;
       padding: 2rem;
-      max-width: 900px;
-      border-radius: 30px;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(8px);
-      border: 4px solid #fffdd0;
+      max-width: 1000px;
+      border-radius: 25px;
+      background: rgba(255, 192, 203, 0.7);
+      backdrop-filter: blur(10px);
+      border: 3px solid #ffe4f1;
+    }
+
+    .box {
+      margin: 1rem;
+      padding: 1.5rem;
+      border-radius: 20px;
+      background: #ffcce5;
+      border: 2px solid #ffe6f3;
+      display: inline-block;
+      min-width: 200px;
+    }
+
+    .column {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+
+    .clown-connector {
+      font-size: 2rem;
+      margin-bottom: 1rem;
     }
 
     .countdown-box {
       margin: 1rem;
       padding: 1rem;
       border-radius: 25px;
-      border: 3px dashed #fffdd0;
+      border: 3px solid #fffaf0;
       background: rgba(255, 255, 255, 0.2);
-      font-size: 1.8rem;
-    }
-
-    .cloud-box {
-      margin: 2rem auto;
-      padding: 2rem;
-      max-width: 700px;
-      background: #fffdd0;
-      color: #a36bff;
-      border-radius: 100px;
-      font-size: 1.8rem;
-    }
-
-    canvas {
-      margin-top: 2rem;
-      border: 4px solid #fffdd0;
-      border-radius: 20px;
-      background: #6e4ab5;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
+      font-size: 1.5rem;
     }
   </style>
 </head>
 <body>
-  <h1>PARKER LOVES ROCKCLIMBING</h1>
+  <h1>✨ Parker's Cute World ✨</h1>
+
+  <div class="section">
+    <h2>Sports & Friends</h2>
+    <div class="column">
+      <div class="box">
+        <div class="clown-connector">🤡</div>
+        <h3>Rock Climbing</h3>
+        <p>Allison - Dec 22</p>
+      </div>
+      <div class="box">
+        <div class="clown-connector">🤡</div>
+        <h3>Volleyball</h3>
+        <p>Lauren - Jun 19</p>
+        <p>Charlotte - Oct 12</p>
+        <p>Jasmine - (add bday)</p>
+        <p>Bella - (add bday)</p>
+        <p>Chloe - Oct 5</p>
+      </div>
+      <div class="box">
+        <div class="clown-connector">🤡</div>
+        <h3>Skiing</h3>
+        <p>Emily - Nov 20</p>
+        <p>Charlotte - Oct 12</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Funny Facts About Parker</h2>
+    <p>💜 Favorite color: Purple</p>
+    <p>🎂 Birthday: March 18</p>
+    <p>🐶 Dog named Orca</p>
+    <p>🍽️ Loves all foods</p>
+  </div>
 
   <div class="section">
     <h2>Countdowns</h2>
     <div id="countdowns"></div>
-  </div>
-
-  <div class="cloud-box">
-    <h2>Friends' Birthdays</h2>
-    <p>Charlotte = October 12</p>
-    <p>Cloe = October 5</p>
-    <p>Allison = December 22</p>
-    <p>Lauren = June 19</p>
-    <p>Emily = November 20</p>
-    <p>Oriana = April 13</p>
-  </div>
-
-  <div class="section">
-    <h2>Facts About Me</h2>
-    <p>💜 My favorite color is purple</p>
-    <p>🐶 I have a dog named Orca</p>
-    <p>🍽️ I love all foods</p>
-  </div>
-
-  <div class="section">
-    <h2>Places I've Been</h2>
-    <p>Bahamas</p>
-    <p>France</p>
-    <p>Ski trip</p>
-  </div>
-
-  <div class="section">
-    <h2>My Favorite Things</h2>
-    <p>Skiing</p>
-    <p>Rockclimbing</p>
-    <p>Creating yummy food</p>
-  </div>
-
-  <div class="section">
-    <h2>Mini Game: Tap the Letter P!</h2>
-    <canvas id="gameCanvas" width="500" height="400"></canvas>
   </div>
 
   <script>
@@ -136,48 +141,7 @@
     }
     setInterval(updateCountdowns, 1000 * 60 * 60);
     updateCountdowns();
-
-    // Mini Game: Tap the Letter P
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-
-    let pX = 50, pY = 200, score = 0;
-    let obstacles = [{ x: 300, y: 150, w: 50, h: 50 }];
-
-    function drawGame() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#fffdd0";
-      ctx.font = "50px Baloo 2";
-      ctx.fillText("P", pX, pY);
-
-      ctx.fillStyle = "#a36bff";
-      obstacles.forEach(o => ctx.fillRect(o.x, o.y, o.w, o.h));
-
-      ctx.font = "20px Baloo 2";
-      ctx.fillStyle = "#fffdd0";
-      ctx.fillText(`Score: ${score}`, 20, 30);
-    }
-
-    function moveP() {
-      pX += 2;
-      if (pX > canvas.width) {
-        pX = 0;
-        pY = Math.random() * (canvas.height - 50) + 50;
-      }
-      drawGame();
-    }
-
-    canvas.addEventListener("click", function (e) {
-      const rect = canvas.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      const clickY = e.clientY - rect.top;
-      if (clickX > pX && clickX < pX + 40 && clickY > pY - 40 && clickY < pY) {
-        score++;
-      }
-    });
-
-    setInterval(moveP, 60);
-    drawGame();
   </script>
 </body>
 </html>
+
