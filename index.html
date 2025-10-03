@@ -1,88 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Parker’s Bio + Game</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parker’s Game</title>
   <style>
     body { margin: 0; font-family: Arial, sans-serif; background: #f9f5ff; }
-    .container { display: flex; height: 100vh; }
-    .sidebar { width: 280px; background: #fff; padding: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.1); overflow-y: auto; }
-    .content { flex: 1; padding: 20px; }
-    h1 { margin-top: 0; color: #6a0dad; }
-    .character { margin: 10px 0; padding: 10px; background: #fddcff; border-radius: 10px; text-align: center; cursor: pointer; }
-    .character.selected { border: 3px solid #6a0dad; }
-    canvas { background: pink; display: block; margin: auto; border-radius: 12px; }
-    button { margin: 5px; padding: 10px 15px; border: none; border-radius: 8px; background: #e3d0ff; cursor: pointer; }
+    canvas { display: block; margin: auto; background: pink; border-radius: 10px; }
+    #controls { text-align: center; margin-top: 10px; }
+    button { margin: 5px; padding: 10px; border: none; border-radius: 6px; background: #e3d0ff; cursor: pointer; }
     button:hover { background: #d2b3ff; }
-    .instructions { font-size: 14px; background: #fff; padding: 15px; border-radius: 10px; margin-top: 20px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="sidebar">
-      <h1>Parker Champlin</h1>
-      <p><b>Student at Dexter Southfield • Chestnut Hill</b></p>
-      <h3>About Parker</h3>
-      <p>Lives in Chestnut Hill. Goes to <b>Dexter Southfield</b>. Loves rock climbing, volleyball, softball, and skiing. Has been to <b>13 countries</b>. Favorite color: <b>purple</b>.</p>
-      <p><b>Dog:</b> Orca — a black & white hound mix</p>
-      <p><b>Sister:</b> Younger sister — in 5th grade</p>
-
-      <h3>Pick a character</h3>
-      <div id="characters">
-        <div class="character" data-name="Superman">🦸‍♂️ Superman</div>
-        <div class="character" data-name="Spider-Man">🕷️ Spider-Man</div>
-        <div class="character" data-name="Batman">🦇 Batman</div>
-        <div class="character" data-name="Rapunzel">👸 Rapunzel</div>
-        <div class="character" data-name="Elsa">❄️ Elsa</div>
-        <div class="character" data-name="Belle">📚 Belle</div>
-      </div>
-    </div>
-    <div class="content">
-      <h2>Flappy-Style Float Game (Flappy Duck-ish)</h2>
-      <canvas id="gameCanvas" width="500" height="400"></canvas>
-      <div>
-        <button onclick="startGame()">Start</button>
-        <button onclick="pauseGame()">Pause</button>
-        <button onclick="restartGame()">Restart</button>
-      </div>
-      <div class="instructions">
-        <h3>How to Play</h3>
-        <p>
-          Tap/click to float up. Avoid the ground and obstacles.  
-          Each obstacle passed = 1 coin.  
-          At <b>30 coins</b> shooting stars appear. Background changes every 15 coins.  
-          Coins save every 15 (turn into saved coins). Use saved coins to buy hearts.  
-        </p>
-      </div>
-    </div>
+  <h1 style="text-align:center;color:#6a0dad;">Flappy-Style Float Game</h1>
+  <canvas id="gameCanvas" width="500" height="400"></canvas>
+  <div id="controls">
+    <button onclick="startGame()">Start</button>
+    <button onclick="pauseGame()">Pause</button>
+    <button onclick="restartGame()">Restart</button>
   </div>
 
   <script>
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
 
-    let character = "Rapunzel";
-    document.querySelectorAll(".character").forEach(el=>{
-      el.addEventListener("click", ()=>{
-        document.querySelectorAll(".character").forEach(c=>c.classList.remove("selected"));
-        el.classList.add("selected");
-        character = el.dataset.name;
-      });
-    });
-
-    let player, gravity, lift, obstacles, coins, savedCoins, hearts;
-    let gameInterval, isPaused=false, backgroundStage=1;
+    let player, gravity, lift, obstacles, frameCount, coins, gameInterval, isPaused=false;
 
     function initGame(){
-      player = {x:50, y:200, radius:15, velocity:0};
+      player = {x:80, y:200, radius:15, velocity:0};
       gravity = 0.5;
       lift = -8;
       obstacles = [];
+      frameCount = 0;
       coins = 0;
-      savedCoins = 0;
-      hearts = 0;
-      backgroundStage=1;
     }
 
     function startGame(){
@@ -90,61 +41,50 @@
       if(gameInterval) clearInterval(gameInterval);
       gameInterval = setInterval(updateGame, 30);
     }
-    function pauseGame(){
-      isPaused=!isPaused;
-    }
-    function restartGame(){
-      clearInterval(gameInterval);
-      startGame();
-    }
+    function pauseGame(){ isPaused=!isPaused; }
+    function restartGame(){ clearInterval(gameInterval); startGame(); }
 
     function updateGame(){
       if(isPaused) return;
+      frameCount++;
       ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle="pink"; ctx.fillRect(0,0,canvas.width,canvas.height);
 
-      // Background color stages
-      if(coins>=45) ctx.fillStyle = "#cce7ff";
-      else if(coins>=30) ctx.fillStyle = "#ffe6ff";
-      else ctx.fillStyle = "pink";
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-
-      // Player
+      // player
       player.velocity += gravity;
       player.y += player.velocity;
-      ctx.beginPath();
-      ctx.arc(player.x, player.y, player.radius, 0, Math.PI*2);
-      ctx.fillStyle="purple";
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(player.x, player.y, player.radius, 0, Math.PI*2);
+      ctx.fillStyle="purple"; ctx.fill();
 
-      // Boundaries
-      if(player.y+player.radius>canvas.height || player.y<0){
-        gameOver();
-      }
+      if(player.y+player.radius>canvas.height || player.y<0) gameOver();
 
-      // Obstacles
-      if(Math.random()<0.02){
-        let gap = 130; // bigger gap
-        let minHeight = 30; // shorter obstacles
+      // spawn obstacles every ~120 frames (slower)
+      if(frameCount % 120 === 0){
+        let gap = 140; // bigger gap
+        let minHeight = 30; // shorter
         let topHeight = Math.floor(Math.random()*(canvas.height-gap-minHeight*2))+minHeight;
-        obstacles.push({x:canvas.width, top:topHeight, gap:gap, width:40});
+        obstacles.push({x:canvas.width, top:topHeight, gap:gap, width:50});
       }
 
+      // draw obstacles
       obstacles.forEach((obs, i)=>{
-        obs.x -= 3; // same speed
+        obs.x -= 3;
         ctx.fillStyle="#ff99cc";
         ctx.fillRect(obs.x,0,obs.width,obs.top);
         ctx.fillRect(obs.x,obs.top+obs.gap,obs.width,canvas.height-(obs.top+obs.gap));
         
-        // Collision
+        // collision
         if(player.x+player.radius>obs.x && player.x-player.radius<obs.x+obs.width){
           if(player.y-player.radius<obs.top || player.y+player.radius>obs.top+obs.gap){
             gameOver();
           }
         }
-
-        // Passed obstacle
+        // coin when fully passed
         if(obs.x+obs.width===player.x) coins++;
       });
+
+      ctx.fillStyle="black";
+      ctx.fillText("Coins: "+coins, 10,20);
     }
 
     function gameOver(){
@@ -152,7 +92,7 @@
       alert("Game Over! Coins: "+coins);
     }
 
-    // Controls
+    // controls
     document.addEventListener("keydown", ()=>player.velocity=lift);
     canvas.addEventListener("mousedown", ()=>player.velocity=lift);
     canvas.addEventListener("touchstart", ()=>player.velocity=lift);
