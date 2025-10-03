@@ -6,271 +6,153 @@
 <title>Parker's Fun Site — Flappy Duck-ish Game</title>
 <style>
   :root{
-    --bg:#fff7ff;
-    --accent:#b987e8;
-    --muted:#666;
-    --pink:#ffddee;
-    --card:#ffffff;
-    --shadow: 0 6px 18px rgba(100,80,120,0.12);
-    --glass: rgba(255,255,255,0.6);
-    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    --bg:#fceaff;
+    --card:#fff;
+    --accent:#c084fc;
   }
-  *{box-sizing:border-box}
   body{
     margin:0;
-    background:linear-gradient(180deg,#fff #f9f7ff);
-    color:#222;
-    min-height:100vh;
+    font-family:sans-serif;
+    background:var(--bg);
+    color:#333;
+  }
+  header{
+    text-align:center;
+    padding:1rem;
+    background:var(--accent);
+    color:white;
+    font-size:1.5rem;
+    font-weight:bold;
+  }
+  nav{
     display:flex;
-    align-items:flex-start;
     justify-content:center;
-    padding:20px;
+    gap:1rem;
+    background:#f0d9ff;
+    padding:.5rem;
   }
-  .container{
-    width:1100px;
-    max-width:100%;
-    display:grid;
-    grid-template-columns: 360px 1fr;
-    gap:20px;
+  nav a{
+    text-decoration:none;
+    color:#333;
+    font-weight:bold;
   }
-
-  /* Left: Bio & Controls */
-  .left{
+  main{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:1rem;
+    padding:1rem;
+  }
+  section{
     background:var(--card);
-    border-radius:14px;
-    padding:18px;
-    box-shadow:var(--shadow);
+    border-radius:1rem;
+    box-shadow:0 2px 6px rgba(0,0,0,.15);
+    padding:1rem;
+    flex:1 1 300px;
+    max-width:600px;
   }
-  .bio{
-    background:linear-gradient(180deg,#fff,#fff7ff);
-    border-radius:12px;
-    padding:12px;
+  h2{
+    margin-top:0;
   }
-  .bio h2{margin:0 0 8px;font-size:20px;color:var(--accent)}
-  .bio p{margin:6px 0;color:var(--muted)}
-  .stat{display:flex;align-items:center;gap:8px;margin:8px 0}
-  .avatar{
-    width:72px;height:72px;border-radius:12px;background:linear-gradient(135deg,#b987e8,#9b6be0);
-    display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:22px;
-    box-shadow:0 6px 14px rgba(155,107,224,0.25);
+  canvas{
+    background:#aee0ff;
+    display:block;
+    margin:0 auto;
+    border-radius:1rem;
   }
-
-  /* Character selection */
-  .characters{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .char-btn{
-    background:var(--pink);border-radius:10px;padding:8px;cursor:pointer;border:2px solid transparent;
-    display:flex;align-items:center;gap:8px;justify-content:space-between;font-weight:600;
+  .store-item{
+    display:flex;
+    justify-content:space-between;
+    margin:.5rem 0;
   }
-  .char-btn.selected{border-color:var(--accent);box-shadow:0 8px 20px rgba(180,120,230,0.12)}
-  .char-emoji{font-size:24px}
-
-  /* Shop and saves */
-  .saves{margin-top:12px;padding:8px;background:linear-gradient(180deg,#fff,#fbf5ff);border-radius:10px}
-  .saves .line{display:flex;justify-content:space-between;align-items:center;margin:6px 0}
-  .buy-cta{margin-top:10px;padding:10px;border-radius:10px;background:linear-gradient(90deg,#ffa6d9,#f6b3ff);border:none;cursor:pointer;font-weight:700}
-
-  /* Right: Game area and sidebar */
-  .right{
-    display:flex;flex-direction:column;gap:12px;
+  .princess{
+    display:inline-block;
+    margin:0.25rem;
+    padding:.25rem .5rem;
+    border:1px solid #ccc;
+    border-radius:0.5rem;
+    cursor:pointer;
   }
-  .topbar{display:flex;align-items:center;justify-content:space-between;}
-  .title{font-size:20px;font-weight:800;color:var(--accent);}
-  .controls{display:flex;gap:8px;align-items:center}
-  .btn{padding:8px 12px;border-radius:10px;border:none;cursor:pointer;background:#f0e9ff;font-weight:700}
-
-  .game-wrap{
-    display:grid;
-    grid-template-columns: 1fr 260px;
-    gap:12px;
-    align-items:start;
-  }
-  .game-card{background:var(--pink);border-radius:12px;padding:12px;box-shadow:var(--shadow);position:relative}
-  canvas{display:block;border-radius:10px;background:linear-gradient(180deg,#ffeef7,#fff0fb);}
-
-  .instructions{
-    background:#fff;border-radius:12px;padding:12px;box-shadow:var(--shadow);height:100%;
-    display:flex;flex-direction:column;gap:8px;
-  }
-  .inst h3{margin:0;color:var(--accent)}
-  .inst p{margin:6px 0;color:var(--muted);font-size:14px}
-  .stats{margin-top:auto}
-  .small{font-size:13px;color:var(--muted)}
-
-  footer{margin-top:10px;text-align:center;color:var(--muted);font-size:13px}
-  @media(max-width:980px){
-    .container{grid-template-columns:1fr;align-items:center}
-    .game-wrap{grid-template-columns:1fr}
+  .selected{
+    background:var(--accent);
+    color:white;
   }
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="left">
-    <div style="display:flex;gap:12px;align-items:center;">
-      <div class="avatar">PC</div>
-      <div>
-        <h2>Parker Champlin</h2>
-        <div class="small">Student at Dexter Southfield • Chestnut Hill</div>
-      </div>
+<header>Parker's Fun Site — Flappy Duck-ish Game</header>
+<nav>
+  <a href="#bio">Bio</a>
+  <a href="#game">Game</a>
+  <a href="#store">Store</a>
+  <a href="#princesses">Princesses</a>
+</nav>
+<main>
+  <section id="bio">
+    <h2>About Parker Champlin</h2>
+    <p>Hi! I'm Parker Champlin. Welcome to my fun site where you can play my custom Flappy Duck-ish game! 🎮💜</p>
+    <ul>
+      <li>My favorite color is purple.</li>
+      <li>My favorite sport is rock climbing.</li>
+      <li>I have one younger sister.</li>
+      <li>I have a dog named Orca 🐶.</li>
+      <li>Birthday: March 18th 🎂</li>
+    </ul>
+  </section>
+
+  <section id="game">
+    <h2>Flappy Duck-ish Game</h2>
+    <canvas id="gameCanvas" width="480" height="640"></canvas>
+    <div style="text-align:center;margin-top:1rem;">
+      <button onclick="startGame()">Start Game</button>
+      <button onclick="pauseGame()">Pause</button>
+      <p>Score: <span id="score">0</span> | Coins: <span id="coins">0</span></p>
+      <p>Difficulty: <span id="difficulty">Easy</span> | Best: <span id="best">0</span></p>
+      <p>Background Stage: <span id="bgStage">1</span></p>
     </div>
+  </section>
 
-    <div class="bio" style="margin-top:12px">
-      <h3>About Parker</h3>
-      <p>Lives in Chestnut Hill. Goes to <strong>Dexter Southfield</strong>. Loves rock climbing, volleyball, softball, and skiing. Has been to <strong>13 countries</strong>. Favorite color: <strong>purple</strong>.</p>
-      <div class="stat"><strong>Dog:</strong><div style="margin-left:8px;color:var(--muted)">Orca — a black & white hound mix</div></div>
-      <div class="stat"><strong>Sister:</strong><div style="margin-left:8px;color:var(--muted)">Younger sister — in 5th grade</div></div>
+  <section id="store">
+    <h2>Heart Store 💖</h2>
+    <div class="store-item">
+      <span>Extra Life — 50 coins</span>
+      <button onclick="buyItem('life')">Buy</button>
     </div>
-
-    <h4 style="margin-top:12px;margin-bottom:6px;color:var(--accent)">Pick a character</h4>
-    <div class="characters" id="characterList">
-      <!-- Buttons injected by JS -->
+    <div class="store-item">
+      <span>New Background — 100 coins</span>
+      <button onclick="buyItem('bg')">Buy</button>
     </div>
+  </section>
 
-    <div class="saves">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <strong>Saved Coins:</strong><div id="savedCoins">0</div>
-      </div>
-      <div class="line"><div class="small">Hearts (continues):</div><div id="hearts">0</div></div>
-      <div class="small">On Game Over, every 15 coins = +5 saved coins (auto-saved). Use saved coins to buy hearts.</div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button class="buy-cta" id="buyHeartBtn">Buy Heart (cost 30 saved)</button>
-        <button class="btn" id="resetSaves">Reset Saves</button>
-      </div>
-    </div>
-
-    <footer>
-      Cute, preppy, trendy — game built for Parker! 💜
-    </footer>
-  </div>
-
-  <div class="right">
-    <div class="topbar">
-      <div class="title">Flappy-Style Float Game (aka Flappy Duck-ish)</div>
-      <div class="controls">
-        <button class="btn" id="goBio">Bio</button>
-        <button class="btn" id="goGame">Play Game</button>
-      </div>
-    </div>
-
-    <div class="game-wrap">
-      <div class="game-card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <div style="font-weight:800">Game Screen</div>
-          <div class="small">Tap/click to float • Don't touch ground or obstacles</div>
-        </div>
-
-        <canvas id="gameCanvas" width="700" height="450"></canvas>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button class="btn" id="startBtn">Start</button>
-          <button class="btn" id="pauseBtn">Pause</button>
-          <button class="btn" id="resetBtn">Restart</button>
-          <div style="margin-left:auto;text-align:right">
-            <div><strong>Run Coins:</strong> <span id="coins">0</span></div>
-            <div class="small">High Score: <span id="best">0</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="instructions">
-        <div class="inst">
-          <h3>How to Play</h3>
-          <p>Pick a character on the left. Press <strong>Start</strong>. Countdown will run — then tap/click anywhere to make your character float up. Avoid obstacles and the ground. Each passed obstacle = 1 coin.</p>
-          <p>At <strong>30 coins</strong> shooting stars start appearing. Game gets harder every 15 coins. Background changes at 45, 60, 75, ...</p>
-          <p>When you die, if you scored 15+ coins, those coins are converted to saved coins automatically (every 15 coins = +5 saved coins). Use saved coins to buy hearts to continue when you die.</p>
-        </div>
-
-        <div class="stats">
-          <div class="small">Selected Character: <span id="selectedChar">—</span></div>
-          <div class="small">Difficulty Level: <span id="difficulty">Easy</span></div>
-          <div class="small">Background Stage: <span id="bgStage">1</span></div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
+  <section id="princesses">
+    <h2>Choose Your Princess</h2>
+    <div id="princessList"></div>
+  </section>
+</main>
 
 <script>
 /* ------------------------------
-   Basic data and UI setup
+   Princess Profiles
    ------------------------------*/
-
-const characters = [
-  {id:'superman', name:'Superman', emoji:'🦸‍♂️'},
-  {id:'spiderman', name:'Spider-Man', emoji:'🕷️'},
-  {id:'batman', name:'Batman', emoji:'🦇'},
-  {id:'rapunzel', name:'Rapunzel', emoji:'👸'},
-  {id:'elsa', name:'Elsa', emoji:'❄️'},
-  {id:'belle', name:'Belle', emoji:'📚👸'}
+const princesses = [
+  {name:"Aurora", img:"https://upload.wikimedia.org/wikipedia/en/8/86/SleepingBeautyAurora.png"},
+  {name:"Belle", img:"https://upload.wikimedia.org/wikipedia/en/d/d5/Belle_disney.png"},
+  {name:"Ariel", img:"https://upload.wikimedia.org/wikipedia/en/6/65/Ariel_disney.png"},
+  {name:"Moana", img:"https://upload.wikimedia.org/wikipedia/en/2/26/Moana_Disney.png"}
 ];
-
-const charContainer = document.getElementById('characterList');
-let selectedCharacter = characters[0].id;
-
-// create char buttons
-characters.forEach(c=>{
-  const btn = document.createElement('button');
-  btn.className = 'char-btn';
-  btn.dataset.id = c.id;
-  btn.innerHTML = `<div style="display:flex;gap:8px;align-items:center">
-    <div class="char-emoji">${c.emoji}</div>
-    <div style="text-align:left">
-      <div style="font-weight:700">${c.name}</div>
-      <div class="small">Tap to select</div>
-    </div>
-  </div>
-  <div style="opacity:.7">Select</div>`;
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.char-btn').forEach(x=>x.classList.remove('selected'));
-    btn.classList.add('selected');
-    selectedCharacter = c.id;
-    document.getElementById('selectedChar').innerText = c.name;
-  });
-  charContainer.appendChild(btn);
+let selectedPrincess = null;
+const princessList = document.getElementById('princessList');
+princesses.forEach((p,i)=>{
+  let div = document.createElement('div');
+  div.className="princess";
+  div.innerHTML = `<img src="${p.img}" alt="${p.name}" style="width:50px;height:50px;border-radius:50%;display:block;margin:auto;"><span>${p.name}</span>`;
+  div.onclick=()=>{
+    document.querySelectorAll('.princess').forEach(el=>el.classList.remove('selected'));
+    div.classList.add('selected');
+    selectedPrincess = p;
+  };
+  princessList.appendChild(div);
 });
-// default select first
-document.querySelectorAll('.char-btn')[0].classList.add('selected');
-document.getElementById('selectedChar').innerText = characters[0].name;
-
-/* Save/Load persistent data (localStorage) */
-const LS_KEYS = {saved:'park_saved', hearts:'park_hearts', best:'park_best'};
-function getSaved(){
-  return parseInt(localStorage.getItem(LS_KEYS.saved) || '0',10);
-}
-function setSaved(val){ localStorage.setItem(LS_KEYS.saved, String(val)); updateSaves(); }
-function getHearts(){ return parseInt(localStorage.getItem(LS_KEYS.hearts) || '0',10); }
-function setHearts(val){ localStorage.setItem(LS_KEYS.hearts, String(val)); updateSaves(); }
-function getBest(){ return parseInt(localStorage.getItem(LS_KEYS.best) || '0',10); }
-function setBest(val){ localStorage.setItem(LS_KEYS.best, String(val)); document.getElementById('best').innerText = val; }
-
-function updateSaves(){
-  document.getElementById('savedCoins').innerText = getSaved();
-  document.getElementById('hearts').innerText = getHearts();
-}
-
-document.getElementById('buyHeartBtn').addEventListener('click', ()=>{
-  const cost = 30;
-  let saved = getSaved();
-  if(saved >= cost){
-    saved -= cost;
-    setSaved(saved);
-    setHearts(getHearts()+1);
-    alert('You bought a heart! 💖');
-  } else {
-    alert('Not enough saved coins. Keep playing to earn more!');
-  }
-});
-document.getElementById('resetSaves').addEventListener('click', ()=>{
-  if(confirm('Reset saved coins and hearts?')){
-    setSaved(0); setHearts(0); setBest(0);
-  }
-});
-updateSaves();
-document.getElementById('best').innerText = getBest();
-
-/* Navigation: Bio / Game (simple behavior: stays in same page but highlights selections) */
-document.getElementById('goBio').addEventListener('click', ()=>window.scrollTo({top:0,behavior:'smooth'}));
-document.getElementById('goGame').addEventListener('click', ()=>document.getElementById('gameCanvas').scrollIntoView({behavior:'smooth'}));
 
 /* ------------------------------
    Canvas Game (Flappy-like)
@@ -279,13 +161,13 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 let W = canvas.width, H = canvas.height;
 
-window.addEventListener('resize', ()=>{ /* keep canvas fixed to designed size */ });
+window.addEventListener('resize', ()=>{ /* keep canvas fixed */ });
 
 /* Game state */
 let game = {
   running:false, paused:false, score:0, best:getBest(), savedThisRun:0,
-  player:null, obstacles:[], frames:0, spawnTimer:0, obstacleGap:140, obstacleWidth:60,
-  gravity:0.5, flap:-9, scrollSpeed:2, bgStage:1, shooting:false, stars:[],
+  player:null, obstacles:[], frames:0, spawnTimer:0, obstacleGap:160, obstacleWidth:60,
+  gravity:0.4, flap:-10, scrollSpeed:1.6, bgStage:1, shooting:false, stars:[],
 };
 
 function resetGameState(){
@@ -306,379 +188,89 @@ function resetGameState(){
 }
 resetGameState();
 
-/* Input: click/touch/space to flap */
-function flap(){
+/* Local storage for best */
+function getBest(){ return parseInt(localStorage.getItem('bestScore')||"0"); }
+function setBest(v){ localStorage.setItem('bestScore',v); }
+
+/* Game loop functions (simplified) */
+function startGame(){ resetGameState(); game.running=true; loop(); }
+function pauseGame(){ game.paused=!game.paused; if(game.running && !game.paused) loop(); }
+
+function loop(){
   if(!game.running) return;
-  game.player.vy = game.flap;
-}
-canvas.addEventListener('mousedown', ()=>flap());
-canvas.addEventListener('touchstart', (e)=>{ e.preventDefault(); flap(); }, {passive:false});
-window.addEventListener('keydown', (e)=>{ if(e.code==='Space') { e.preventDefault(); flap(); } });
-
-/* Buttons */
-document.getElementById('startBtn').addEventListener('click', ()=>{
-  if(!game.running){
-    startCountdown(startRun);
-  } else {
-    // restart mid-run
-    resetGameState(); startCountdown(startRun);
-  }
-});
-document.getElementById('pauseBtn').addEventListener('click', ()=>{
-  game.paused = !game.paused;
-  document.getElementById('pauseBtn').innerText = game.paused ? 'Resume' : 'Pause';
-});
-document.getElementById('resetBtn').addEventListener('click', ()=>{ if(confirm('Restart run?')) { resetGameState(); } });
-
-/* Countdown */
-function startCountdown(cb){
-  let c = 3;
-  const overlay = createOverlay();
-  overlay.innerHTML = `<div style="font-weight:900;font-size:44px;color:#6a2fb0">3</div>`;
-  const iv = setInterval(()=>{
-    c--;
-    overlay.innerHTML = `<div style="font-weight:900;font-size:44px;color:#6a2fb0">${c>0?c:'GO!'}</div>`;
-    if(c<0){
-      clearInterval(iv);
-      removeOverlay(overlay);
-      cb();
-    }
-  }, 800);
-}
-
-function createOverlay(){
-  const el = document.createElement('div');
-  el.style.position='absolute';
-  el.style.left='0'; el.style.top='0';
-  el.style.width='100%'; el.style.height='100%';
-  el.style.display='flex'; el.style.alignItems='center'; el.style.justifyContent='center';
-  el.style.pointerEvents='none';
-  el.style.fontFamily='inherit';
-  canvas.parentNode.appendChild(el);
-  return el;
-}
-function removeOverlay(el){ el.remove(); }
-
-/* Obstacle generator */
-function spawnObstacle(){
-  const minTop = 40;
-  const maxTop = H - game.obstacleGap - 40;
-  const top = Math.floor(Math.random() * (maxTop - minTop + 1)) + minTop;
-  game.obstacles.push({x: W + 20, top: top, passed:false});
-}
-
-/* Shooting stars */
-function spawnStar(){
-  // spawn from random edge, travel in random direction
-  const edge = Math.floor(Math.random()*4);
-  let x, y, vx, vy;
-  const speed = 2 + Math.random()*3 + game.bgStage*0.5;
-  if(edge===0){ x = -20; y = Math.random()*H; vx = speed; vy = (Math.random()-0.5)*speed; }
-  if(edge===1){ x = W+20; y = Math.random()*H; vx = -speed; vy = (Math.random()-0.5)*speed; }
-  if(edge===2){ x = Math.random()*W; y = -20; vx = (Math.random()-0.5)*speed; vy = speed; }
-  if(edge===3){ x = Math.random()*W; y = H+20; vx = (Math.random()-0.5)*speed; vy = -speed; }
-  game.stars.push({x,y,vx,vy,r:4 + Math.random()*3});
-}
-
-/* Difficulty scaling and background stages */
-function updateDifficulty(){
-  const coins = game.score;
-  const level = Math.floor(coins / 15); // increments every 15 coins
-  game.scrollSpeed = 2 + level*0.6;
-  // obstacle gap shrink slightly with level:
-  game.obstacleGap = Math.max(90, 140 - level*6);
-  // spawn more often with level:
-  game.spawnInterval = Math.max(65, 110 - level*8);
-  // update difficulty label
-  const diffText = ['Easy','Getting there','Tricky','Tough','Yikes','Crazy'][Math.min(5, level)];
-  document.getElementById('difficulty').innerText = diffText;
-  // background stage increases every 15 coins after 30 (or at 45,60,...)
-  const bgStage = 1 + Math.floor(Math.max(0, coins - 30) / 15);
-  if(bgStage !== game.bgStage){
-    game.bgStage = bgStage;
-    document.getElementById('bgStage').innerText = game.bgStage;
-  }
-  // shooting stars start at 30 coins
-  game.shooting = coins >= 30;
-}
-
-/* Collision detection */
-function rectsCollide(a,b){ // a and b rectangles {x,y,w,h}
-  return !(a.x + a.w < b.x || a.x > b.x + b.w || a.y + a.h < b.y || a.y > b.y + b.h);
-}
-
-/* Main loop */
-function startRun(){
-  resetAfterCount();
-  game.running = true;
-  game.paused = false;
-  document.getElementById('pauseBtn').innerText = 'Pause';
-  // initialize parameters
-  game.spawnInterval = 100;
-  game.obstacleGap = 140;
-  game.scrollSpeed = 2;
+  if(game.paused){ requestAnimationFrame(loop); return; }
+  update(); draw();
   requestAnimationFrame(loop);
 }
 
-function resetAfterCount(){
-  game.obstacles = [];
-  game.frames = 0;
-  game.spawnTimer = 0;
-  game.score = 0;
-  game.player.x = 140;
-  game.player.y = H/2;
-  game.player.vy = 0;
-  game.player.alive = true;
-  document.getElementById('coins').innerText = 0;
-}
-
-/* Game over */
-function handleGameOver(){
-  game.running = false;
-  game.player.alive = false;
-  // convert run coins to saved coins: every 15 coins = +5 saved
-  const runCoins = game.score;
-  let gained = Math.floor(runCoins / 15) * 5;
-  if(gained > 0){
-    const prevSaved = getSaved();
-    setSaved(prevSaved + gained);
-    alert(`Game Over! You earned ${runCoins} coins this run.\nSaved coins gained: ${gained} (saved total ${getSaved()})`);
-  } else {
-    alert(`Game Over! You earned ${runCoins} coins this run. Collect 15+ coins to gain saved coins.`);
-  }
-  // update best
-  if(runCoins > getBest()){
-    setBest(runCoins);
-    alert('New High Score! 🎉');
-  }
-  // offer heart continue if any hearts available
-  if(getHearts() > 0){
-    if(confirm('You have hearts saved. Use one to continue from where you died?')){
-      // Use a heart: decrement and revive player with small invulnerability
-      setHearts(getHearts()-1);
-      game.player.alive = true;
-      game.running = true;
-      // give a small boost
-      game.player.vy = game.flap * 0.8;
-      requestAnimationFrame(loop);
-      return;
-    }
-  }
-  // else reset state to allow start again
-}
-
-/* Helper: draw rounded rect */
-function roundRect(ctx,x,y,w,h,r){
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.arcTo(x+w,y,x+w,y+h,r);
-  ctx.arcTo(x+w,y+h,x,y+h,r);
-  ctx.arcTo(x,y+h,x,y,r);
-  ctx.arcTo(x,y,x+w,y,r);
-  ctx.closePath();
-  ctx.fill();
-}
-
-/* draw character — simple styled square with emoji */
-function drawCharacter(p){
-  const x = p.x, y = p.y, w = p.w, h = p.h;
-  ctx.save();
-  ctx.fillStyle = '#ffffffcc';
-  ctx.strokeStyle = '#b987e8';
-  ctx.lineWidth = 3;
-  roundRect(ctx, x-4, y-4, w+8, h+8, 10);
-  ctx.fillStyle = '#fff';
-  roundRect(ctx, x, y, w, h, 8);
-  ctx.restore();
-  // draw emoji in center
-  ctx.font = '26px Segoe UI Emoji, sans-serif';
-  const ch = characters.find(c=>c.id===selectedCharacter).emoji || '🦆';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(ch, x + w/2, y + h/2 + 2);
-}
-
-/* draw background variations */
-function drawBackground(){
-  // Base pink sky
-  const g = ctx.createLinearGradient(0,0,0,H);
-  if(game.bgStage === 1){
-    g.addColorStop(0,'#fff0fb'); g.addColorStop(1,'#ffeef7');
-  } else if(game.bgStage === 2){
-    g.addColorStop(0,'#fff2f7'); g.addColorStop(1,'#fff5ee');
-  } else if(game.bgStage === 3){
-    g.addColorStop(0,'#e8f7ff'); g.addColorStop(1,'#fff0fb');
-  } else if(game.bgStage === 4){
-    g.addColorStop(0,'#fff7e6'); g.addColorStop(1,'#fff0fb');
-  } else {
-    g.addColorStop(0,'#f6f0ff'); g.addColorStop(1,'#fff0fb');
-  }
-  ctx.fillStyle = g;
-  ctx.fillRect(0,0,W,H);
-
-  // ground
-  ctx.fillStyle = '#ffdff0';
-  ctx.fillRect(0, H-28, W, 28);
-  // start line
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(120, H-120, 4, 120);
-  ctx.font = '12px sans-serif';
-  ctx.fillStyle = '#7f5aa7';
-  ctx.fillText('START', 112, H-122);
-}
-
-/* main loop function */
-function loop(){
-  if(!game.running || game.paused) return;
+function update(){
   game.frames++;
-  game.frames%=1000000;
-
-  // physics
   game.player.vy += game.gravity;
   game.player.y += game.player.vy;
-  if(game.player.y + game.player.h > H - 28){ // hit ground
-    game.player.y = H - 28 - game.player.h;
-    // Player dies
-    handleGameOver();
-  }
-  if(game.player.y < 0){ game.player.y = 0; game.player.vy = 0; }
 
-  // spawn obstacles
-  game.spawnTimer++;
-  if(game.spawnTimer > game.spawnInterval){
-    spawnObstacle();
-    game.spawnTimer = 0;
+  if(game.player.y>H){ endGame(); }
+
+  if(game.frames%90===0){
+    let gapY = 100+Math.random()*(H-200);
+    game.obstacles.push({x:W, y:gapY});
   }
 
-  // move obstacles
-  for(let i=game.obstacles.length-1;i>=0;i--){
-    const ob = game.obstacles[i];
-    ob.x -= game.scrollSpeed;
-    // if passed player and not yet counted
-    if(!ob.passed && ob.x + game.obstacleWidth < game.player.x){
-      ob.passed = true;
-      game.score++;
-      document.getElementById('coins').innerText = game.score;
-      updateDifficulty();
-    }
-    // collision check: top rect and bottom rect
-    const topRect = {x:ob.x,y:0,w:game.obstacleWidth,h:ob.top};
-    const bottomRect = {x:ob.x,y:ob.top + game.obstacleGap,w:game.obstacleWidth,h:H - (ob.top + game.obstacleGap) - 28};
-    const playerRect = {x:game.player.x, y:game.player.y, w:game.player.w, h:game.player.h};
-    if(rectsCollide(playerRect, topRect) || rectsCollide(playerRect, bottomRect)){
-      handleGameOver();
-    }
-    // remove off-screen obstacles
-    if(ob.x + game.obstacleWidth < -40){
-      game.obstacles.splice(i,1);
-    }
-  }
+  game.obstacles.forEach(o=>{ o.x-=game.scrollSpeed; });
+  game.obstacles = game.obstacles.filter(o=>o.x>-60);
 
-  // stars handling
-  if(game.shooting && Math.random() < 0.03 + game.bgStage*0.01){
-    spawnStar();
-  }
-  for(let i=game.stars.length-1;i>=0;i--){
-    const s = game.stars[i];
-    s.x += s.vx; s.y += s.vy;
-    // collision with player
-    const pr = {x:game.player.x, y:game.player.y, w:game.player.w, h:game.player.h};
-    const sr = {x:s.x-s.r, y:s.y-s.r, w:s.r*2, h:s.r*2};
-    if(rectsCollide(pr,sr)){
-      // collision -> game over quickly
-      handleGameOver();
+  game.obstacles.forEach(o=>{
+    if(game.player.x < o.x+game.obstacleWidth && game.player.x+game.player.w > o.x){
+      if(game.player.y<o.y-game.obstacleGap/2 || game.player.y+game.player.h>o.y+game.obstacleGap/2){
+        endGame();
+      }
     }
-    // remove if off screen
-    if(s.x < -50 || s.x > W+50 || s.y < -50 || s.y > H+50){
-      game.stars.splice(i,1);
-    }
-  }
-
-  // update visuals
-  drawBackground();
-
-  // draw obstacles
-  game.obstacles.forEach(ob=>{
-    ctx.fillStyle = '#ffb6da';
-    roundRect(ctx, ob.x, 0, game.obstacleWidth, ob.top, 6);
-    roundRect(ctx, ob.x, ob.top + game.obstacleGap, game.obstacleWidth, H - (ob.top + game.obstacleGap) - 28, 6);
-    // little moving squares inside obstacles for extra difficulty
-    ctx.fillStyle = '#ff8fcf';
-    const moveOffset = Math.sin((game.frames + ob.x)/30) * 10;
-    roundRect(ctx, ob.x + 10, ob.top - 18 + moveOffset, 14, 14, 3);
   });
 
-  // draw stars
-  game.stars.forEach(s=>{
-    ctx.beginPath();
-    ctx.fillStyle = '#fff7a6';
-    ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-    ctx.fill();
-  });
-
-  // draw player
-  drawCharacter(game.player);
-
-  // HUD: coin icon
-  ctx.font = '16px sans-serif';
-  ctx.fillStyle = '#7f5aa7';
-  ctx.fillText('Coins: ' + game.score, 14, 22);
-
-  requestAnimationFrame(loop);
+  if(game.frames%60===0){
+    game.score++;
+    document.getElementById('score').innerText=game.score;
+    if(game.score>game.best){ game.best=game.score; setBest(game.best); document.getElementById('best').innerText=game.best; }
+  }
 }
 
-/* window tick for spawn interval default and difficulty refresher */
-setInterval(()=>{
-  if(game.running && !game.paused){
-    // ensure spawnInterval is defined and difficulty is updated
-    updateDifficulty();
-  }
-}, 500);
+function draw(){
+  ctx.fillStyle="#aee0ff";
+  if(game.bgStage==2) ctx.fillStyle="pink";
+  if(game.bgStage==3) ctx.fillStyle="linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)";
+  ctx.fillRect(0,0,W,H);
 
-/* ensure canvas dimensions match DPR */
-function applyDPR(){
-  const dpr = Math.min(2, window.devicePixelRatio || 1);
-  canvas.width = 700 * dpr;
-  canvas.height = 450 * dpr;
-  canvas.style.width = '100%';
-  canvas.style.height = (450) + 'px';
-  W = canvas.width; H = canvas.height;
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-}
-applyDPR();
+  ctx.fillStyle="yellow";
+  ctx.fillRect(game.player.x,game.player.y,game.player.w,game.player.h);
 
-/* Save highscore when leaving */
-window.addEventListener('beforeunload', ()=>{ setBest(getBest()); });
-
-/* tiny UX: clicking start actually starts run if not running */
-document.getElementById('startBtn').addEventListener('click', ()=>{ /* handled earlier */ });
-
-/* draw initial screen */
-(function drawTitleScreen(){
-  drawBackground();
-  ctx.fillStyle = '#7f5aa7';
-  ctx.font = '34px serif';
-  ctx.textAlign = 'center'; ctx.fillText("Tap 'Start' to Play!", W/2, H/2 - 20);
-  ctx.font = '18px sans-serif';
-  ctx.fillText("Pick a character on the left • Use saved coins to buy hearts", W/2, H/2 + 12);
-})();
-
-/* handle window focus to avoid pause confusion */
-window.addEventListener('blur', ()=>{ if(game.running) game.paused = true; });
-
-/* quick helpers for mobile users: allow clicking selected characters to show name */
-document.querySelectorAll('.char-btn').forEach(b=>{
-  b.addEventListener('dblclick', ()=>{
-    alert('Selected: ' + characters.find(c=>c.id===b.dataset.id).name);
+  ctx.fillStyle="green";
+  game.obstacles.forEach(o=>{
+    ctx.fillRect(o.x,0,game.obstacleWidth,o.y-game.obstacleGap/2);
+    ctx.fillRect(o.x,o.y+game.obstacleGap/2,game.obstacleWidth,H);
   });
+}
+
+function endGame(){
+  game.running=false;
+  alert("Game Over! Score: "+game.score);
+}
+
+document.addEventListener('keydown', e=>{
+  if(e.code==="Space"){ game.player.vy=game.flap; }
 });
 
-/* Useful debug toggles (commented out) */
-// window.gameObj = game;
-
+/* ------------------------------
+   Store Logic
+   ------------------------------*/
+let coins=0;
+function buyItem(item){
+  if(item==='life' && coins>=50){ coins-=50; alert("Extra Life bought!"); }
+  if(item==='bg' && coins>=100){ coins-=100; game.bgStage++; alert("Background upgraded to "+game.bgStage); }
+  document.getElementById('coins').innerText=coins;
+}
 </script>
 </body>
 </html>
+
 
 
 
