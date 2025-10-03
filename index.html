@@ -163,11 +163,18 @@ let W = canvas.width, H = canvas.height;
 
 window.addEventListener('resize', ()=>{ /* keep canvas fixed */ });
 
-/* Game state */
+/* Game state — ONLY THESE NUMBERS CHANGED */
 let game = {
   running:false, paused:false, score:0, best:getBest(), savedThisRun:0,
-  player:null, obstacles:[], frames:0, spawnTimer:0, obstacleGap:160, obstacleWidth:60,
-  gravity:0.4, flap:-10, scrollSpeed:1.6, bgStage:1, shooting:false, stars:[],
+  player:null, obstacles:[], frames:0, spawnTimer:0, 
+  obstacleGap:160,   // easier: more space
+  obstacleWidth:60,
+  gravity:0.4,       // easier: slower fall
+  flap:-10,          // easier: stronger flap
+  scrollSpeed:1.6,   // easier: slower pipes
+  bgStage:1, 
+  shooting:false, 
+  stars:[],
 };
 
 function resetGameState(){
