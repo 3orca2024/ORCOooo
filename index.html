@@ -78,22 +78,25 @@
 
     let character = { name: "Default", color: "purple" };
 
-    let player, obstacles, coins, gravity, lift, velocity, score;
-    let gameInterval, isPaused = false;
+    let player, obstacles, coins, gravity, flap, velocity;
+    let gameInterval, isPaused = false, frameCount, scrollSpeed, obstacleGap, spawnInterval;
 
     function chooseCharacter(name, color) {
       character = { name, color };
-      alert("You chose " + name + "!");
+      document.getElementById("characterSelect").style.display = "none"; 
     }
 
     function resetGame() {
       player = { x: 50, y: 200, radius: 15, color: character.color };
-      gravity = 0.3;
-      lift = -6;
+      gravity = 0.4;   // easier: weaker gravity
+      flap = -10;      // stronger flap
       velocity = 0;
       obstacles = [];
       coins = 0;
-      score = 0;
+      frameCount = 0;
+      scrollSpeed = 1.8;    // slower scroll
+      obstacleGap = 160;    // bigger gaps
+      spawnInterval = 120;  // less frequent obstacles
     }
 
     function startGame() {
@@ -103,81 +106,106 @@
     }
 
     function pauseGame() {
-      if (isPaused) {
-        gameInterval = setInterval(updateGame, 20);
-      } else {
-        clearInterval(gameInterval);
-      }
       isPaused = !isPaused;
     }
 
     function restartGame() {
-      clearInterval(gameInterval);
       startGame();
     }
 
     function updateGame() {
+      if (isPaused) return;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Player
+      // player physics
       velocity += gravity;
       player.y += velocity;
-      if (player.y + player.radius > canvas.height) {
-        player.y = canvas.height - player.radius;
-        velocity = 0;
-      }
-      if (player.y - player.radius < 0) {
-        player.y = player.radius;
-        velocity = 0;
-      }
+
+      // draw player
       ctx.beginPath();
-      ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+      ctx.arc(player.x, player.y, player.radius, 0, Math.PI*2);
       ctx.fillStyle = player.color;
       ctx.fill();
+      ctx.closePath();
 
-      // Obstacles
-      if (Math.random() < 0.02) { // spawn rate
-        let gapHeight = 140; // bigger gap = easier
-        let gapY = Math.floor(Math.random() * (canvas.height - gapHeight - 40)) + 20;
-        obstacles.push({ x: canvas.width, gapY: gapY, width: 30, gapHeight: gapHeight });
+      // spawn obstacles
+      frameCount++;
+      if (frameCount % spawnInterval === 0) {
+        let topHeight = Math.random() * (canvas.height - obstacleGap - 50) + 20;
+        obstacles.push({
+          x: canvas.width,
+          width: 30,
+          topHeight: topHeight,
+          bottomY: topHeight + obstacleGap
+        });
       }
 
-      for (let i = 0; i < obstacles.length; i++) {
+      // update & draw obstacles
+      for (let i = obstacles.length - 1; i >= 0; i--) {
         let obs = obstacles[i];
-        obs.x -= 2; // move slower = easier
-        ctx.fillStyle = "deeppink";
-        ctx.fillRect(obs.x, 0, obs.width, obs.gapY);
-        ctx.fillRect(obs.x, obs.gapY + obs.gapHeight, obs.width, canvas.height);
+        obs.x -= scrollSpeed;
 
-        // Collision
-        if (player.x + player.radius > obs.x && player.x - player.radius < obs.x + obs.width) {
-          if (player.y - player.radius < obs.gapY || player.y + player.radius > obs.gapY + obs.gapHeight) {
-            gameOver();
-          }
+        ctx.fillStyle = "#ff66b2";
+        ctx.fillRect(obs.x, 0, obs.width, obs.topHeight);
+        ctx.fillRect(obs.x, obs.bottomY, obs.width, canvas.height - obs.bottomY);
+
+        // collision detection
+        if (
+          player.x + player.radius > obs.x &&
+          player.x - player.radius < obs.x + obs.width &&
+          (player.y - player.radius < obs.topHeight ||
+           player.y + player.radius > obs.bottomY)
+        ) {
+          gameOver();
+        }
+
+        // passed obstacle
+        if (obs.x + obs.width < player.x - player.radius && !obs.passed) {
+          coins++;
+          obs.passed = true;
+        }
+
+        if (obs.x + obs.width < 0) {
+          obstacles.splice(i, 1);
         }
       }
 
-      if (obstacles.length > 0 && obstacles[0].x < -50) {
-        obstacles.shift();
-        coins++;
+      // check ground / ceiling
+      if (player.y + player.radius > canvas.height || player.y - player.radius < 0) {
+        gameOver();
       }
 
-      // Score
+      // score
       ctx.fillStyle = "black";
-      ctx.font = "14px Arial";
+      ctx.font = "16px Arial";
       ctx.fillText("Coins: " + coins, 10, 20);
+
+      // gradually increase difficulty
+      if (coins > 0 && coins % 15 === 0) {
+        scrollSpeed = 1.8 + (coins / 60); 
+        obstacleGap = Math.max(120, 160 - (coins / 3)); 
+        spawnInterval = Math.max(85, 120 - (coins / 4));
+      }
+    }
+
+    function flapPlayer() {
+      velocity = flap;
     }
 
     function gameOver() {
       clearInterval(gameInterval);
-      alert("Game Over! You scored " + coins + " coins as " + character.name + "!");
+      alert("Game Over! Coins: " + coins);
     }
 
-    // Controls
-    document.addEventListener("keydown", () => { velocity += lift; });
-    canvas.addEventListener("mousedown", () => { velocity += lift; });
-    canvas.addEventListener("touchstart", () => { velocity += lift; });
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space") flapPlayer();
+    });
+
+    canvas.addEventListener("mousedown", flapPlayer);
+    canvas.addEventListener("touchstart", flapPlayer);
   </script>
 </body>
 </html>
+
 
