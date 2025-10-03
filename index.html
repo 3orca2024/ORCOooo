@@ -2,20 +2,71 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Parker’s Game</title>
+  <title>Flappy Character Game</title>
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; background: #f9f5ff; }
-    canvas { display: block; margin: auto; background: pink; border-radius: 10px; }
-    #controls { text-align: center; margin-top: 10px; }
-    button { margin: 5px; padding: 10px; border: none; border-radius: 6px; background: #e3d0ff; cursor: pointer; }
-    button:hover { background: #d2b3ff; }
+    body {
+      text-align: center;
+      background-color: #f8f0ff;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      color: purple;
+    }
+    canvas {
+      background-color: #ffcce6;
+      display: block;
+      margin: 0 auto;
+      border-radius: 15px;
+    }
+    .buttons {
+      margin-top: 15px;
+    }
+    button {
+      background-color: #d1b3ff;
+      border: none;
+      padding: 10px 15px;
+      margin: 5px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #b380ff;
+      color: white;
+    }
+    #characterSelect {
+      margin: 15px;
+    }
+    .charBtn {
+      padding: 8px 12px;
+      margin: 5px;
+      border-radius: 8px;
+      border: 2px solid purple;
+      background: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .charBtn:hover {
+      background: lavender;
+    }
   </style>
 </head>
 <body>
-  <h1 style="text-align:center;color:#6a0dad;">Flappy-Style Float Game</h1>
-  <canvas id="gameCanvas" width="500" height="400"></canvas>
-  <div id="controls">
+  <h1>Flappy-Style Character Game</h1>
+
+  <div id="characterSelect">
+    <h3>Select Your Character:</h3>
+    <button class="charBtn" onclick="chooseCharacter('Iron Man', 'red')">Iron Man</button>
+    <button class="charBtn" onclick="chooseCharacter('Spider-Man', 'blue')">Spider-Man</button>
+    <button class="charBtn" onclick="chooseCharacter('Captain Marvel', 'gold')">Captain Marvel</button>
+    <button class="charBtn" onclick="chooseCharacter('Cinderella', 'skyblue')">Cinderella</button>
+    <button class="charBtn" onclick="chooseCharacter('Ariel', 'seagreen')">Ariel</button>
+    <button class="charBtn" onclick="chooseCharacter('Belle', 'yellow')">Belle</button>
+  </div>
+
+  <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+  <div class="buttons">
     <button onclick="startGame()">Start</button>
     <button onclick="pauseGame()">Pause</button>
     <button onclick="restartGame()">Restart</button>
@@ -25,81 +76,108 @@
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
 
-    let player, gravity, lift, obstacles, frameCount, coins, gameInterval, isPaused=false;
+    let character = { name: "Default", color: "purple" };
 
-    function initGame(){
-      player = {x:80, y:200, radius:15, velocity:0};
-      gravity = 0.5;
-      lift = -8;
+    let player, obstacles, coins, gravity, lift, velocity, score;
+    let gameInterval, isPaused = false;
+
+    function chooseCharacter(name, color) {
+      character = { name, color };
+      alert("You chose " + name + "!");
+    }
+
+    function resetGame() {
+      player = { x: 50, y: 200, radius: 15, color: character.color };
+      gravity = 0.3;
+      lift = -6;
+      velocity = 0;
       obstacles = [];
-      frameCount = 0;
       coins = 0;
+      score = 0;
     }
 
-    function startGame(){
-      initGame();
-      if(gameInterval) clearInterval(gameInterval);
-      gameInterval = setInterval(updateGame, 30);
+    function startGame() {
+      resetGame();
+      if (gameInterval) clearInterval(gameInterval);
+      gameInterval = setInterval(updateGame, 20);
     }
-    function pauseGame(){ isPaused=!isPaused; }
-    function restartGame(){ clearInterval(gameInterval); startGame(); }
 
-    function updateGame(){
-      if(isPaused) return;
-      frameCount++;
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      ctx.fillStyle="pink"; ctx.fillRect(0,0,canvas.width,canvas.height);
+    function pauseGame() {
+      if (isPaused) {
+        gameInterval = setInterval(updateGame, 20);
+      } else {
+        clearInterval(gameInterval);
+      }
+      isPaused = !isPaused;
+    }
 
-      // player
-      player.velocity += gravity;
-      player.y += player.velocity;
-      ctx.beginPath(); ctx.arc(player.x, player.y, player.radius, 0, Math.PI*2);
-      ctx.fillStyle="purple"; ctx.fill();
+    function restartGame() {
+      clearInterval(gameInterval);
+      startGame();
+    }
 
-      if(player.y+player.radius>canvas.height || player.y<0) gameOver();
+    function updateGame() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // spawn obstacles every ~120 frames (slower)
-      if(frameCount % 120 === 0){
-        let gap = 140; // bigger gap
-        let minHeight = 30; // shorter
-        let topHeight = Math.floor(Math.random()*(canvas.height-gap-minHeight*2))+minHeight;
-        obstacles.push({x:canvas.width, top:topHeight, gap:gap, width:50});
+      // Player
+      velocity += gravity;
+      player.y += velocity;
+      if (player.y + player.radius > canvas.height) {
+        player.y = canvas.height - player.radius;
+        velocity = 0;
+      }
+      if (player.y - player.radius < 0) {
+        player.y = player.radius;
+        velocity = 0;
+      }
+      ctx.beginPath();
+      ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+      ctx.fillStyle = player.color;
+      ctx.fill();
+
+      // Obstacles
+      if (Math.random() < 0.02) { // spawn rate
+        let gapHeight = 140; // bigger gap = easier
+        let gapY = Math.floor(Math.random() * (canvas.height - gapHeight - 40)) + 20;
+        obstacles.push({ x: canvas.width, gapY: gapY, width: 30, gapHeight: gapHeight });
       }
 
-      // draw obstacles
-      obstacles.forEach((obs, i)=>{
-        obs.x -= 3;
-        ctx.fillStyle="#ff99cc";
-        ctx.fillRect(obs.x,0,obs.width,obs.top);
-        ctx.fillRect(obs.x,obs.top+obs.gap,obs.width,canvas.height-(obs.top+obs.gap));
-        
-        // collision
-        if(player.x+player.radius>obs.x && player.x-player.radius<obs.x+obs.width){
-          if(player.y-player.radius<obs.top || player.y+player.radius>obs.top+obs.gap){
+      for (let i = 0; i < obstacles.length; i++) {
+        let obs = obstacles[i];
+        obs.x -= 2; // move slower = easier
+        ctx.fillStyle = "deeppink";
+        ctx.fillRect(obs.x, 0, obs.width, obs.gapY);
+        ctx.fillRect(obs.x, obs.gapY + obs.gapHeight, obs.width, canvas.height);
+
+        // Collision
+        if (player.x + player.radius > obs.x && player.x - player.radius < obs.x + obs.width) {
+          if (player.y - player.radius < obs.gapY || player.y + player.radius > obs.gapY + obs.gapHeight) {
             gameOver();
           }
         }
-        // coin when fully passed
-        if(obs.x+obs.width===player.x) coins++;
-      });
+      }
 
-      ctx.fillStyle="black";
-      ctx.fillText("Coins: "+coins, 10,20);
+      if (obstacles.length > 0 && obstacles[0].x < -50) {
+        obstacles.shift();
+        coins++;
+      }
+
+      // Score
+      ctx.fillStyle = "black";
+      ctx.font = "14px Arial";
+      ctx.fillText("Coins: " + coins, 10, 20);
     }
 
-    function gameOver(){
+    function gameOver() {
       clearInterval(gameInterval);
-      alert("Game Over! Coins: "+coins);
+      alert("Game Over! You scored " + coins + " coins as " + character.name + "!");
     }
 
-    // controls
-    document.addEventListener("keydown", ()=>player.velocity=lift);
-    canvas.addEventListener("mousedown", ()=>player.velocity=lift);
-    canvas.addEventListener("touchstart", ()=>player.velocity=lift);
-
-    initGame();
+    // Controls
+    document.addEventListener("keydown", () => { velocity += lift; });
+    canvas.addEventListener("mousedown", () => { velocity += lift; });
+    canvas.addEventListener("touchstart", () => { velocity += lift; });
   </script>
 </body>
 </html>
-
 
