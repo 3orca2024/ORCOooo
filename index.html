@@ -2,210 +2,176 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Flappy Character Game</title>
+  <title>Parker’s World</title>
   <style>
-    body {
-      text-align: center;
-      background-color: #f8f0ff;
-      font-family: Arial, sans-serif;
+    body { margin:0; font-family:Arial, sans-serif; background:#fce6f9; }
+    nav { background:purple; padding:10px; text-align:center; }
+    nav button {
+      margin:5px; padding:10px 15px;
+      border:none; border-radius:8px;
+      background:white; color:purple;
+      font-weight:bold; cursor:pointer;
     }
-    h1 {
-      color: purple;
+    nav button:hover { background:lavender; }
+    .page { display:none; padding:20px; }
+    #bio { text-align:center; }
+    .bio-box {
+      background:white; padding:20px; border-radius:15px;
+      width:60%; margin:auto; box-shadow:0 4px 10px rgba(0,0,0,0.2);
     }
-    canvas {
-      background-color: #ffcce6;
-      display: block;
-      margin: 0 auto;
-      border-radius: 15px;
+    canvas { background:pink; display:block; margin:20px auto; border-radius:15px; }
+    #store { text-align:center; }
+    .store-box {
+      background:white; padding:20px; border-radius:15px;
+      width:50%; margin:auto; box-shadow:0 4px 10px rgba(0,0,0,0.2);
     }
-    .buttons {
-      margin-top: 15px;
+    .store-box button {
+      margin:10px; padding:10px 15px; border:none;
+      background:purple; color:white; border-radius:8px; cursor:pointer;
     }
-    button {
-      background-color: #d1b3ff;
-      border: none;
-      padding: 10px 15px;
-      margin: 5px;
-      border-radius: 10px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #b380ff;
-      color: white;
-    }
-    #characterSelect {
-      margin: 15px;
-    }
-    .charBtn {
-      padding: 8px 12px;
-      margin: 5px;
-      border-radius: 8px;
-      border: 2px solid purple;
-      background: white;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .charBtn:hover {
-      background: lavender;
-    }
+    .store-box button:hover { background:orchid; }
   </style>
 </head>
 <body>
-  <h1>Flappy-Style Character Game</h1>
+  <nav>
+    <button onclick="showPage('game')">🎮 Play Game</button>
+    <button onclick="showPage('bio')">📖 My Bio</button>
+    <button onclick="showPage('store')">🛍️ Store</button>
+  </nav>
 
-  <div id="characterSelect">
-    <h3>Select Your Character:</h3>
-    <button class="charBtn" onclick="chooseCharacter('Iron Man', 'red')">Iron Man</button>
-    <button class="charBtn" onclick="chooseCharacter('Spider-Man', 'blue')">Spider-Man</button>
-    <button class="charBtn" onclick="chooseCharacter('Captain Marvel', 'gold')">Captain Marvel</button>
-    <button class="charBtn" onclick="chooseCharacter('Cinderella', 'skyblue')">Cinderella</button>
-    <button class="charBtn" onclick="chooseCharacter('Ariel', 'seagreen')">Ariel</button>
-    <button class="charBtn" onclick="chooseCharacter('Belle', 'yellow')">Belle</button>
+  <!-- GAME PAGE -->
+  <div id="game" class="page">
+    <h2 style="text-align:center">Choose Your Character</h2>
+    <div style="text-align:center; margin-bottom:15px;">
+      <button onclick="selectCharacter('Spider-Man')">🕷️ Spider-Man</button>
+      <button onclick="selectCharacter('Batman')">🦇 Batman</button>
+      <button onclick="selectCharacter('Superman')">🦸 Superman</button>
+      <button onclick="selectCharacter('Rapunzel')">👸 Rapunzel</button>
+      <button onclick="selectCharacter('Elsa')">❄️ Elsa</button>
+      <button onclick="selectCharacter('Belle')">🌹 Belle</button>
+    </div>
+    <canvas id="gameCanvas" width="480" height="640"></canvas>
+    <p style="text-align:center;">Tap or press space to flap! Don’t hit obstacles. Every obstacle = 1 coin.</p>
+    <p style="text-align:center;" id="scoreDisplay">Score: 0 | Coins: 0</p>
   </div>
 
-  <canvas id="gameCanvas" width="400" height="400"></canvas>
+  <!-- BIO PAGE -->
+  <div id="bio" class="page">
+    <h1>🌸 Parker Champlin 🌸</h1>
+    <div class="bio-box">
+      <p><strong>School:</strong> Dexter Southfield</p>
+      <p><strong>Lives in:</strong> Chestnut Hill</p>
+      <p><strong>Dog:</strong> Orca 🐾 (black + white hound mix)</p>
+      <p><strong>Favorite Color:</strong> Purple 💜</p>
+      <p><strong>Sister:</strong> One younger sister (5th grade)</p>
+      <p><strong>Countries Traveled:</strong> 13 🌍</p>
+      <p><strong>Sports:</strong> Rock climbing (favorite), volleyball, softball, skiing ⛷️</p>
+    </div>
+  </div>
 
-  <div class="buttons">
-    <button onclick="startGame()">Start</button>
-    <button onclick="pauseGame()">Pause</button>
-    <button onclick="restartGame()">Restart</button>
+  <!-- STORE PAGE -->
+  <div id="store" class="page">
+    <h1>🛍️ Game Store</h1>
+    <div class="store-box">
+      <p><strong>Coins:</strong> <span id="storeCoins">0</span></p>
+      <p><strong>Hearts:</strong> <span id="hearts">0</span></p>
+      <button onclick="buyHeart()">💖 Buy Heart (30 coins)</button>
+    </div>
   </div>
 
   <script>
+    // Page switching
+    function showPage(page) {
+      document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+      document.getElementById(page).style.display = 'block';
+    }
+    showPage('bio');
+
+    // Game setup
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
+    let character = "Spider-Man";
+    let coins = 0;
+    let hearts = 0;
 
-    let character = { name: "Default", color: "purple" };
+    let game = {
+      birdY: 200, birdVY: 0, gravity: 0.4, flap: -10,
+      obstacles: [], frame:0, scrollSpeed:1.8,
+      obstacleGap:160, spawnInterval:120, score:0, playing:false
+    };
 
-    let player, obstacles, coins, gravity, flap, velocity;
-    let gameInterval, isPaused = false, frameCount, scrollSpeed, obstacleGap, spawnInterval;
-
-    function chooseCharacter(name, color) {
-      character = { name, color };
-      document.getElementById("characterSelect").style.display = "none"; 
+    function selectCharacter(c) {
+      character = c;
+      resetGame();
     }
 
     function resetGame() {
-      player = { x: 50, y: 200, radius: 15, color: character.color };
-      gravity = 0.4;   // easier: weaker gravity
-      flap = -10;      // stronger flap
-      velocity = 0;
-      obstacles = [];
-      coins = 0;
-      frameCount = 0;
-      scrollSpeed = 1.8;    // slower scroll
-      obstacleGap = 160;    // bigger gaps
-      spawnInterval = 120;  // less frequent obstacles
+      game.birdY = 200; game.birdVY = 0; game.obstacles = [];
+      game.frame = 0; game.score = 0; game.playing = true;
     }
 
-    function startGame() {
-      resetGame();
-      if (gameInterval) clearInterval(gameInterval);
-      gameInterval = setInterval(updateGame, 20);
-    }
+    document.addEventListener("keydown", e => { if(e.code==="Space") flap(); });
+    canvas.addEventListener("mousedown", flap);
+    function flap(){ if(game.playing) game.birdVY = game.flap; }
 
-    function pauseGame() {
-      isPaused = !isPaused;
-    }
+    function update() {
+      if(!game.playing) return;
+      game.frame++;
+      game.birdVY += game.gravity;
+      game.birdY += game.birdVY;
 
-    function restartGame() {
-      startGame();
-    }
-
-    function updateGame() {
-      if (isPaused) return;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // player physics
-      velocity += gravity;
-      player.y += velocity;
-
-      // draw player
-      ctx.beginPath();
-      ctx.arc(player.x, player.y, player.radius, 0, Math.PI*2);
-      ctx.fillStyle = player.color;
-      ctx.fill();
-      ctx.closePath();
-
-      // spawn obstacles
-      frameCount++;
-      if (frameCount % spawnInterval === 0) {
-        let topHeight = Math.random() * (canvas.height - obstacleGap - 50) + 20;
-        obstacles.push({
-          x: canvas.width,
-          width: 30,
-          topHeight: topHeight,
-          bottomY: topHeight + obstacleGap
-        });
+      if(game.frame % game.spawnInterval === 0) {
+        let top = Math.random()*200+50;
+        game.obstacles.push({x:canvas.width, topHeight:top});
       }
 
-      // update & draw obstacles
-      for (let i = obstacles.length - 1; i >= 0; i--) {
-        let obs = obstacles[i];
-        obs.x -= scrollSpeed;
+      for(let o of game.obstacles) o.x -= game.scrollSpeed;
 
-        ctx.fillStyle = "#ff66b2";
-        ctx.fillRect(obs.x, 0, obs.width, obs.topHeight);
-        ctx.fillRect(obs.x, obs.bottomY, obs.width, canvas.height - obs.bottomY);
+      if(game.obstacles.length && game.obstacles[0].x < -50) game.obstacles.shift();
 
-        // collision detection
-        if (
-          player.x + player.radius > obs.x &&
-          player.x - player.radius < obs.x + obs.width &&
-          (player.y - player.radius < obs.topHeight ||
-           player.y + player.radius > obs.bottomY)
-        ) {
-          gameOver();
-        }
-
-        // passed obstacle
-        if (obs.x + obs.width < player.x - player.radius && !obs.passed) {
-          coins++;
-          obs.passed = true;
-        }
-
-        if (obs.x + obs.width < 0) {
-          obstacles.splice(i, 1);
+      for(let o of game.obstacles) {
+        if(o.x<60 && o.x+50>20) {
+          if(game.birdY<o.topHeight || game.birdY>o.topHeight+game.obstacleGap){
+            if(hearts>0){ hearts--; resetGame(); return; }
+            else game.playing=false;
+          }
         }
       }
 
-      // check ground / ceiling
-      if (player.y + player.radius > canvas.height || player.y - player.radius < 0) {
-        gameOver();
+      for(let o of game.obstacles){
+        if(o.x===canvas.width-50) { game.score++; coins++; }
       }
+      document.getElementById("scoreDisplay").textContent =
+        "Score: " + game.score + " | Coins: " + coins;
+      document.getElementById("storeCoins").textContent = coins;
+      document.getElementById("hearts").textContent = hearts;
+    }
 
-      // score
-      ctx.fillStyle = "black";
-      ctx.font = "16px Arial";
-      ctx.fillText("Coins: " + coins, 10, 20);
+    function draw() {
+      ctx.fillStyle = "pink";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
 
-      // gradually increase difficulty
-      if (coins > 0 && coins % 15 === 0) {
-        scrollSpeed = 1.8 + (coins / 60); 
-        obstacleGap = Math.max(120, 160 - (coins / 3)); 
-        spawnInterval = Math.max(85, 120 - (coins / 4));
+      ctx.fillStyle="red"; ctx.fillRect(20,game.birdY,30,30);
+      ctx.fillStyle="green";
+      for(let o of game.obstacles){
+        ctx.fillRect(o.x,0,50,o.topHeight);
+        ctx.fillRect(o.x,o.topHeight+game.obstacleGap,50,canvas.height);
       }
     }
 
-    function flapPlayer() {
-      velocity = flap;
+    function loop(){ update(); draw(); requestAnimationFrame(loop); }
+    loop();
+
+    // Store logic
+    function buyHeart(){
+      if(coins>=30){ coins-=30; hearts++; }
+      else alert("Not enough coins!");
+      document.getElementById("storeCoins").textContent = coins;
+      document.getElementById("hearts").textContent = hearts;
     }
-
-    function gameOver() {
-      clearInterval(gameInterval);
-      alert("Game Over! Coins: " + coins);
-    }
-
-    document.addEventListener("keydown", (e) => {
-      if (e.code === "Space") flapPlayer();
-    });
-
-    canvas.addEventListener("mousedown", flapPlayer);
-    canvas.addEventListener("touchstart", flapPlayer);
   </script>
 </body>
 </html>
+
 
 
